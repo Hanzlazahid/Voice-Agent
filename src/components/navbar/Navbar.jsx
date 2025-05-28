@@ -55,7 +55,7 @@ const Navbar = () => {
                             <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-2">
                                 <span className="text-white font-bold text-lg">S</span>
                             </div>
-                            <span className="text-white font-semibold text-3xl">Synthflow</span>
+                            <span className="text-white font-semibold text-3xl">Voice Agent</span>
                         </Link>
                     </div>
 
