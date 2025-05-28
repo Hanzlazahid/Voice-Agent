@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - dev  # ← trigger the workflow on push to dev branch
 
 jobs:
   deploy:
@@ -28,5 +28,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
+          publish_dir: ./dist  # or ./build, depending on your project
+          publish_branch: gh-pages  # ← where to push built files
