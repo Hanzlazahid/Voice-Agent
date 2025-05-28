@@ -67,7 +67,7 @@ const Navbar = () => {
                                 <button
                                     className="text-white hover:text-gray-300 px-3 py-2 text-lg font-medium flex items-center transition-colors duration-200 cursor-pointer"
                                 >
-                                    Solutionss
+                                    Solutions
                                     <ChevronDown className="ml-1 h-4 w-4 transition-transform duration-300 group-hover:rotate-180" />
                                 </button>
                                 {/* Added pt-2 to create seamless hover area */}
