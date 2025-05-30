@@ -1,6 +1,7 @@
 import Navbar from "@/components/navbar/Navbar";
 import HeroSection from "./home/Hero";
 import Demo from "./home/Demo";
+import VoicesSection from "./home/Voices";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       </div>
       <HeroSection/>
       <Demo/>
+      <VoicesSection/>
     </>
   );
 }

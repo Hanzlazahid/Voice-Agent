@@ -1,5 +1,77 @@
 @import "tailwindcss";
 
-body{
+body {
     background-color: black;
+}
+
+.carousel-container{
+    padding: 25px 0;
+}
+
+/* .react-multi-carousel-list{
+    overflow: hidden !important;
+    z-index: -10 hidden !important;
+} */
+
+.custom-dot-list-style {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-top: 2rem !important;
+    border: white;
+}
+
+.custom-dot-list-style li {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    transition: all 0.3s ease !important;
+    /* cursor: pointer !important; */
+}
+
+.custom-dot-list-style li.react-multi-carousel-dot--active {
+    width: 32px !important;
+    height: 8px !important;
+    border-radius: 4px !important;
+    background: linear-gradient(to right, #a855f7, #ec4899) !important;
+}
+
+.react-multiple-carousel__arrow {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 50% !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    transition: all 0.3s ease !important;
+    z-index: 50 !important;
+}
+
+.react-multiple-carousel__arrow:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(1.05) !important;
+}
+
+.react-multiple-carousel__arrow::before {
+    color: white !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+}
+
+.react-multiple-carousel__arrow--left {
+    left: 0 !important;
+}
+
+.react-multiple-carousel__arrow--right {
+    right: 0 !important;
+}
+
+@media (max-width: 768px) {
+    .react-multiple-carousel__arrow {
+        display: none !important;
+    }
 }
