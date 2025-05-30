@@ -1,7 +1,26 @@
+"use client";
+
 import React from 'react';
 import { Play, Pause } from 'lucide-react';
+import Image from 'next/image';
 
 const VoiceCard = ({ voice, isPlaying, onTogglePlay, progress }) => {
+    const formatTime = (time) => {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    // Convert duration string to seconds for display
+    const getDurationInSeconds = (durationString) => {
+        if (!durationString) return 0;
+        const [minutes, seconds] = durationString.split(':').map(Number);
+        return minutes * 60 + seconds;
+    };
+
+    const durationInSeconds = getDurationInSeconds(voice.duration);
+    const currentTimeInSeconds = (progress / 100) * durationInSeconds;
+
     return (
         <div className="relative overflow-hidden rounded-3xl p-6 bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-xl border border-white/30 shadow-2xl transition-all duration-500 hover:border-white/40 w-full h-[370px]">
             <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-400/20 to-pink-400/20 transition-all duration-500" />
@@ -9,29 +28,30 @@ const VoiceCard = ({ voice, isPlaying, onTogglePlay, progress }) => {
             <div className="relative z-10 h-full flex flex-col">
                 <div className="flex items-center space-x-4 mb-6">
                     <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg bg-gradient-to-br from-purple-400 to-pink-400 shadow-lg transition-all duration-500">
-                        {voice.name[0]}
+                        <Image src={voice.avatar} width={100} height={100} className='rounded-xl' alt='avatar' />
                     </div>
                     <div className="flex-1">
                         <h3 className="font-semibold text-lg text-white transition-all duration-300">
-                            {voice.name}
+                            {voice.name || 'Voice Sample'}
                         </h3>
                         <p className="text-sm text-purple-200 transition-all duration-300">
-                            {voice.title}
+                            {voice.title || 'Audio Sample'}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 mb-6">
                     <span className="px-3 py-1 text-white text-xs font-medium rounded-full bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300">
-                        {voice.type}
+                        {voice.type || 'Audio'}
                     </span>
                     <span className="px-3 py-1 text-white text-xs rounded-full backdrop-blur-sm bg-white/30 transition-all duration-300">
-                        {voice.description}
+                        {voice.description || 'Sample'}
                     </span>
                     <span className="px-3 py-1 text-white text-xs rounded-full backdrop-blur-sm bg-white/30 transition-all duration-300">
-                        {voice.language}
+                        {voice.language || 'English'}
                     </span>
                 </div>
+
                 <div className="flex-1 flex flex-col justify-end">
                     <div className="rounded-2xl p-4 backdrop-blur-sm border bg-gradient-to-r from-purple-600/40 to-pink-600/40 border-white/20 transition-all duration-500">
                         {/* Waveform Visualization */}
@@ -40,8 +60,7 @@ const VoiceCard = ({ voice, isPlaying, onTogglePlay, progress }) => {
                                 {Array.from({ length: 40 }).map((_, i) => (
                                     <div
                                         key={i}
-                                        className={`w-1 bg-gradient-to-t from-purple-400 to-pink-400 rounded-full transition-all duration-75 ${isPlaying ? 'animate-pulse' : ''
-                                            }`}
+                                        className={`w-1 bg-gradient-to-t from-purple-400 to-pink-400 rounded-full transition-all duration-75 ${isPlaying ? 'animate-pulse' : ''}`}
                                         style={{
                                             height: `${Math.random() * 60 + 20}%`,
                                             opacity: progress > (i / 40) * 100 ? 1 : 0.4
@@ -52,7 +71,9 @@ const VoiceCard = ({ voice, isPlaying, onTogglePlay, progress }) => {
                         </div>
 
                         <div className="flex items-center justify-between">
-                            <span className="text-white/70 text-sm">00:00</span>
+                            <span className="text-white/70 text-sm">
+                                {formatTime(currentTimeInSeconds)}
+                            </span>
 
                             <button
                                 onClick={onTogglePlay}
@@ -65,7 +86,9 @@ const VoiceCard = ({ voice, isPlaying, onTogglePlay, progress }) => {
                                 )}
                             </button>
 
-                            <span className="text-white/70 text-sm">{voice.duration}</span>
+                            <span className="text-white/70 text-sm">
+                                {voice.duration || '0:00'}
+                            </span>
                         </div>
                     </div>
                 </div>

@@ -9,6 +9,7 @@ const VoicesSection = () => {
     const [playingId, setPlayingId] = useState(null);
     const [progress, setProgress] = useState({});
     const audioRefs = useRef({});
+    const carouselRef = useRef(null);
 
     const voices = [
         {
@@ -18,9 +19,9 @@ const VoicesSection = () => {
             type: "inbound agent",
             description: "clear & natural male",
             language: "english-en-us",
-            audioUrl: "/api/audio/jordan.mp3",
+            audioUrl: "/assets/audio/ending.mp3",
             duration: "02:29",
-            avatar: "/avatars/jordan.jpg"
+            avatar: "/assets/images/sins.jpg"
         },
         {
             id: 2,
@@ -29,9 +30,9 @@ const VoicesSection = () => {
             type: "outbound agent",
             description: "warm & professional female",
             language: "english-en-us",
-            audioUrl: "/api/audio/sarah.mp3",
+            audioUrl: "/assets/audio/flavoured.mp3",
             duration: "01:45",
-            avatar: "/avatars/sarah.jpg"
+            avatar: "/assets/images/sins.jpg"
         },
         {
             id: 3,
@@ -40,9 +41,9 @@ const VoicesSection = () => {
             type: "inbound agent",
             description: "confident & friendly male",
             language: "english-en-us",
-            audioUrl: "/api/audio/michael.mp3",
+            audioUrl: "/assets/audio/honey.mp3",
             duration: "03:12",
-            avatar: "/avatars/michael.jpg"
+            avatar: "/assets/images/sins.jpg"
         },
         {
             id: 4,
@@ -51,9 +52,9 @@ const VoicesSection = () => {
             type: "outbound agent",
             description: "elegant & articulate female",
             language: "english-en-us",
-            audioUrl: "/api/audio/emma.mp3",
+            audioUrl: "/assets/audio/honey.mp3",
             duration: "02:05",
-            avatar: "/avatars/emma.jpg"
+            avatar: "/assets/images/sins.jpg"
         },
         {
             id: 5,
@@ -62,9 +63,9 @@ const VoicesSection = () => {
             type: "outbound agent",
             description: "elegant & articulate male",
             language: "english-en-us",
-            audioUrl: "/api/audio/jonny.mp3",
+            audioUrl: "/assets/audio/peanuts.mp3",
             duration: "02:05",
-            avatar: "/avatars/jonny.jpg"
+            avatar: "/assets/images/sins.jpg"
         }
     ];
 
@@ -89,6 +90,35 @@ const VoicesSection = () => {
         }
     };
 
+    // Initialize real audio objects
+    useEffect(() => {
+        voices.forEach(voice => {
+            if (!audioRefs.current[voice.id]) {
+                const audio = new Audio(voice.audioUrl);
+                audio.preload = 'metadata';
+                
+                audio.addEventListener('timeupdate', () => handleTimeUpdate(voice.id));
+                audio.addEventListener('ended', () => handleAudioEnd(voice.id));
+                audio.addEventListener('loadedmetadata', () => {
+                    // Audio metadata loaded
+                });
+                
+                audioRefs.current[voice.id] = audio;
+            }
+        });
+
+        // Cleanup function
+        return () => {
+            Object.values(audioRefs.current).forEach(audio => {
+                if (audio && typeof audio.pause === 'function') {
+                    audio.pause();
+                    audio.removeEventListener('timeupdate', () => handleTimeUpdate);
+                    audio.removeEventListener('ended', () => handleAudioEnd);
+                }
+            });
+        };
+    }, []);
+
     const togglePlay = (voiceId) => {
         const audio = audioRefs.current[voiceId];
         if (!audio) return;
@@ -97,8 +127,17 @@ const VoicesSection = () => {
             audio.pause();
             setPlayingId(null);
         } else {
-            // Pause all other audio
-            Object.values(audioRefs.current).forEach(a => a?.pause());
+            // Pause all other audio and reset their progress
+            Object.entries(audioRefs.current).forEach(([id, a]) => {
+                if (a && typeof a.pause === 'function') {
+                    a.pause();
+                    // Reset progress for all other audios
+                    if (parseInt(id) !== voiceId) {
+                        a.currentTime = 0;
+                        setProgress(prev => ({ ...prev, [id]: 0 }));
+                    }
+                }
+            });
             setPlayingId(voiceId);
             audio.play().catch(console.error);
         }
@@ -106,7 +145,7 @@ const VoicesSection = () => {
 
     const handleTimeUpdate = (voiceId) => {
         const audio = audioRefs.current[voiceId];
-        if (audio) {
+        if (audio && audio.duration) {
             const progressPercent = (audio.currentTime / audio.duration) * 100;
             setProgress(prev => ({ ...prev, [voiceId]: progressPercent }));
         }
@@ -115,24 +154,12 @@ const VoicesSection = () => {
     const handleAudioEnd = (voiceId) => {
         setPlayingId(null);
         setProgress(prev => ({ ...prev, [voiceId]: 0 }));
+        // Reset the audio to beginning
+        const audio = audioRefs.current[voiceId];
+        if (audio) {
+            audio.currentTime = 0;
+        }
     };
-
-    // Initialize mock audio objects
-    useEffect(() => {
-        voices.forEach(voice => {
-            if (!audioRefs.current[voice.id]) {
-                const audio = {
-                    play: () => Promise.resolve(),
-                    pause: () => { },
-                    currentTime: 0,
-                    duration: 149,
-                    addEventListener: () => { },
-                    removeEventListener: () => { }
-                };
-                audioRefs.current[voice.id] = audio;
-            }
-        });
-    }, []);
 
     return (
         <section className="px-4 bg-black relative pb-28 pt-10 ">
@@ -148,13 +175,14 @@ const VoicesSection = () => {
 
                 <div className="relative">
                     <Carousel
+                        ref={carouselRef}
                         swipeable={true}
                         draggable={true}
                         showDots={true}
                         responsive={responsive}
                         ssr={true}
                         infinite={true}
-                        autoPlay={true}
+                        autoPlay={!playingId} // Pause auto-play when audio is playing
                         autoPlaySpeed={3000}
                         keyBoardControl={true}
                         customTransition="transform 500ms ease-in-out"
